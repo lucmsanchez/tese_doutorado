@@ -1,24 +1,39 @@
-# Neuroimaging Results Viewer
+# NeuroImagine - Advanced NiiVue Viewer
 
-This is a simple web-based viewer for NIfTI files (`.nii`, `.nii.gz`) powered by [NiiVue](https://github.com/niivue/niivue).
+A professional-grade, web-based viewer for neuroimaging data (NIfTI), powered by [NiiVue](https://github.com/niivue/niivue).
 
-## How to Use
+## Features
 
-1.  **Open the Viewer**: Open `results.html` in a modern web browser (Chrome, Firefox, Edge).
-    *   Note: You need an internet connection to load the NiiVue library.
-2.  **Load Images**:
-    *   Click "Choose Files" to select NIfTI files from your computer.
-    *   Or simply **drag and drop** files directly onto the viewer.
-3.  **Controls**:
-    *   **Color Map**: Change the color scheme using the dropdown menu.
-    *   **Radiological**: Toggle radiological convention (Left is Right).
-    *   **Mouse Controls**:
-        *   Left Click + Drag: Adjust contrast/brightness (on 2D slices) or rotate (on 3D render).
-        *   Right Click + Drag: Zoom.
-        *   Middle Click + Drag: Pan.
-        *   Scroll: Change slice.
+- **Multi-Format Support**: Load `.nii`, `.nii.gz` files.
+- **Advanced Visualization**:
+    - Multi-planar reconstruction (Axial, Coronal, Sagittal).
+    - 3D Volume Rendering.
+    - Adjustable slicing layouts.
+- **Overlay Support**: Load multiple images on top of each other (e.g., statistical maps over structural MRI).
+- **Customization**:
+    - Multiple color maps (Jet, Viridis, Magma, etc.).
+    - Toggle Crosshairs and Orientation text.
+    - Radiological Convention support.
+- **Tools**:
+    - Screenshot capture.
+    - Drag & Drop interface.
+
+## Quick Start
+
+1.  **Open** `results.html` in your web browser (Chrome/Edge/Firefox).
+2.  **Load Data**:
+    - Click **📁 Open File** button in the top toolbar.
+    - Or **Drag & Drop** files directly into the window.
+3.  **Add Overlays**:
+    - Click **➕ Add Overlay** to layer additional maps.
+4.  **Navigate**:
+    - Use the **View** dropdown to switch between 2D slices and 3D render.
+    - **Left Click + Drag**: Adjust contrast/brightness (2D) or Rotate (3D).
+    - **Right Click + Drag**: Zoom.
+    - **Middle Click + Drag**: Pan.
+    - **Scroll**: Change slice.
 
 ## Requirements
 
-*   Web Browser with WebGL 2.0 support.
-*   Internet connection (for loading NiiVue from CDN).
+*   Modern Web Browser with WebGL 2.0.
+*   Internet Connection (loads NiiVue from CDN).

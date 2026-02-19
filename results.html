@@ -4,87 +4,491 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neuroimaging Results Visualization - NiiVue</title>
-    <!-- Basic styling -->
+    <title>NeuroImagine - Advanced NiiVue Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #202020;
-            color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
+        :root {
+            --bg-primary: #0f0f13;
+            --bg-secondary: #1a1a24;
+            --bg-tertiary: #222233;
+            --bg-hover: #2a2a3d;
+            --text-primary: #e8e8f0;
+            --text-secondary: #9898b0;
+            --text-muted: #6a6a80;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --border: #2e2e42;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
         }
 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ========== HEADER ========== */
         header {
-            padding: 10px 20px;
-            background-color: #333;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 0 16px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .brand {
+            font-weight: 700;
+            font-size: 15px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .brand-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent), #a855f7);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* Toolbar groups */
+        .tg {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0 10px;
+            height: 100%;
+            border-left: 1px solid var(--border);
+        }
+
+        .tg:first-of-type {
+            border-left: none;
+        }
+
+        .tg-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-right: 4px;
+        }
+
+        /* ========== CONTROLS ========== */
+        button,
+        select {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+
+        button:hover,
+        select:hover {
+            background: var(--bg-hover);
+            border-color: #444;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        button.primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 12px var(--accent-glow);
+        }
+
+        select {
+            appearance: none;
+            padding-right: 24px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898b0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+        }
+
+        select option {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        label.chk {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.15s;
+        }
+
+        label.chk:hover {
+            color: var(--text-primary);
+        }
+
+        input[type="checkbox"] {
+            accent-color: var(--accent);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 80px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 2px solid var(--bg-primary);
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        /* Icon buttons */
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            font-size: 15px;
+            border-radius: 6px;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        /* ========== MAIN ========== */
+        #main {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-section h3 {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
         }
 
-        h1 {
-            margin: 0;
-            font-size: 1.2rem;
+        .sidebar-row label {
+            color: var(--text-secondary);
+            font-size: 12px;
         }
 
-        #controls {
+        .sidebar-row select,
+        .sidebar-row input[type="range"] {
+            max-width: 130px;
+        }
+
+        /* Volume list */
+        #volumeList {
+            list-style: none;
+            padding: 0;
+        }
+
+        #volumeList li {
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 4px;
+            font-size: 12px;
             display: flex;
-            gap: 10px;
             align-items: center;
+            justify-content: space-between;
+            background: var(--bg-tertiary);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.15s;
         }
 
-        #container {
-            flex-grow: 1;
-            position: relative;
+        #volumeList li:hover {
+            border-color: var(--border);
+            background: var(--bg-hover);
+        }
+
+        #volumeList li.active {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .vol-name {
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 160px;
+        }
+
+        .vol-remove {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .vol-remove:hover {
+            color: var(--danger);
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        /* Canvas container */
+        #container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            min-width: 0;
         }
 
         canvas {
             width: 100%;
             height: 100%;
-            outline: none;
+            display: block;
         }
 
+        /* ========== FOOTER ========== */
         footer {
-            padding: 5px 20px;
-            background-color: #333;
-            text-align: center;
-            font-size: 0.8rem;
+            height: 28px;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            font-size: 11px;
+            color: var(--text-muted);
+            justify-content: space-between;
         }
 
-        button,
-        select,
-        input[type="file"] {
-            padding: 5px 10px;
-            border-radius: 4px;
-            border: none;
+        #status {
+            color: var(--text-secondary);
+        }
+
+        /* Drop zone overlay */
+        .drop-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(99, 102, 241, 0.15);
+            border: 3px dashed var(--accent);
+            border-radius: 12px;
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-hover);
+        }
+
+        .drop-overlay.visible {
+            display: flex;
+        }
+
+        /* ROI chips / tags */
+        .roi-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
             cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text-secondary);
+            margin: 2px;
         }
 
-        button {
-            background-color: #007bff;
-            color: white;
+        .roi-chip:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .roi-chip.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        .roi-container {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2px;
+            margin-top: 8px;
+            padding: 4px 0;
+        }
+
+        .roi-search {
+            width: 100%;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            outline: none;
+            margin-top: 6px;
+        }
+
+        .roi-search:focus {
+            border-color: var(--accent);
+        }
+
+        .roi-actions {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .roi-actions button {
+            flex: 1;
+            font-size: 11px;
+            padding: 5px 8px;
+        }
+
+        .roi-info {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 6px;
+            font-style: italic;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
         }
     </style>
 </head>
 
 <body>
 
+    <!-- ======== HEADER / TOOLBAR ======== -->
     <header>
-        <h1>NeuroResults Viewer</h1>
-        <div id="controls">
+        <div class="brand">
+            <div class="brand-icon">🧠</div>
+            NeuroImagine
+        </div>
+
+        <!-- FILE -->
+        <div class="tg">
+            <button class="primary" onclick="document.getElementById('fileInput').click()" title="Open NIfTI file(s)">
+                📂 Open
+            </button>
             <input type="file" id="fileInput" multiple accept=".nii,.nii.gz">
-            <select id="colorMapSelect">
+            <button onclick="document.getElementById('overlayInput').click()" title="Add overlay / atlas">
+                ➕ Overlay
+            </button>
+            <input type="file" id="overlayInput" multiple accept=".nii,.nii.gz">
+        </div>
+
+        <!-- VIEW -->
+        <div class="tg">
+            <span class="tg-label">View</span>
+            <select id="sliceType" title="Change slice orientation">
+                <option value="0">Axial</option>
+                <option value="1">Coronal</option>
+                <option value="2">Sagittal</option>
+                <option value="3" selected>Multiplanar</option>
+                <option value="4">3D Render</option>
+            </select>
+        </div>
+
+        <!-- COLOR -->
+        <div class="tg">
+            <span class="tg-label">Color</span>
+            <select id="colormap" title="Colormap for selected volume">
                 <option value="gray">Gray</option>
                 <option value="jet">Jet</option>
+                <option value="hot">Hot</option>
                 <option value="winter">Winter</option>
                 <option value="warm">Warm</option>
                 <option value="cool">Cool</option>
@@ -92,76 +496,667 @@
                 <option value="inferno">Inferno</option>
                 <option value="plasma">Plasma</option>
                 <option value="viridis">Viridis</option>
+                <option value="red">Red</option>
+                <option value="green">Green</option>
+                <option value="blue">Blue</option>
             </select>
-            <label><input type="checkbox" id="checkRadiological" checked> Radiological</label>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="tg">
+            <span class="tg-label">Options</span>
+            <label class="chk" title="Radiological convention (L=R)">
+                <input type="checkbox" id="chkRadio" checked> Radio
+            </label>
+            <label class="chk" title="Show crosshair">
+                <input type="checkbox" id="chkCross" checked> Cross
+            </label>
+            <label class="chk" title="Show orientation text">
+                <input type="checkbox" id="chkText" checked> Text
+            </label>
+            <label class="chk" title="Show colorbar">
+                <input type="checkbox" id="chkColorbar" checked> Bar
+            </label>
+        </div>
+
+        <div class="spacer"></div>
+
+        <!-- TOOLS -->
+        <div class="tg">
+            <button class="icon-btn" onclick="takeScreenshot()" title="Save screenshot">📷</button>
+            <button class="icon-btn" onclick="resetView()" title="Reset view">🔄</button>
         </div>
     </header>
 
-    <div id="container">
-        <canvas id="gl"></canvas>
+    <!-- ======== MAIN AREA ======== -->
+    <div id="main">
+        <!-- SIDEBAR -->
+        <div id="sidebar">
+            <!-- Loaded Volumes -->
+            <div class="sidebar-section">
+                <h3>📁 Loaded Volumes</h3>
+                <ul id="volumeList">
+                    <li
+                        style="color: var(--text-muted); background: none; border: none; font-style: italic; cursor: default;">
+                        No volumes loaded
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Selected Volume Properties -->
+            <div class="sidebar-section">
+                <h3>🎨 Selected Volume</h3>
+                <div class="sidebar-row">
+                    <label>Colormap</label>
+                    <select id="sidebarColormap">
+                        <option value="gray">Gray</option>
+                        <option value="jet">Jet</option>
+                        <option value="hot">Hot</option>
+                        <option value="winter">Winter</option>
+                        <option value="warm">Warm</option>
+                        <option value="cool">Cool</option>
+                        <option value="magma">Magma</option>
+                        <option value="inferno">Inferno</option>
+                        <option value="plasma">Plasma</option>
+                        <option value="viridis">Viridis</option>
+                        <option value="red">Red</option>
+                        <option value="green">Green</option>
+                        <option value="blue">Blue</option>
+                    </select>
+                </div>
+                <div class="sidebar-row">
+                    <label>Opacity</label>
+                    <input type="range" id="opacitySlider" min="0" max="1" step="0.05" value="1">
+                </div>
+            </div>
+
+            <!-- Atlas ROI Filter -->
+            <div class="sidebar-section">
+                <h3>🧩 Atlas ROI Filter</h3>
+                <div class="roi-actions">
+                    <button onclick="detectROIs()" title="Scan the selected volume for unique integer labels">🔍 Detect
+                        ROIs</button>
+                    <button onclick="showAllROIs()" title="Restore all labels">👁️ Show All</button>
+                </div>
+                <input type="text" class="roi-search" id="roiSearch" placeholder="Search ROI label..."
+                    oninput="filterROIChips()">
+                <div class="roi-container" id="roiContainer">
+                    <div class="roi-info">Click "Detect ROIs" on an atlas volume</div>
+                </div>
+                <div class="roi-info" id="roiStatus"></div>
+            </div>
+
+            <!-- Display Settings -->
+            <div class="sidebar-section">
+                <h3>⚙️ Display</h3>
+                <div class="sidebar-row">
+                    <label>Background</label>
+                    <select id="bgColor">
+                        <option value="0,0,0" selected>Black</option>
+                        <option value="0.15,0.15,0.2">Dark Blue</option>
+                        <option value="0.12,0.12,0.12">Dark Gray</option>
+                        <option value="0.3,0.3,0.3">Mid Gray</option>
+                        <option value="1,1,1">White</option>
+                    </select>
+                </div>
+                <div class="sidebar-row">
+                    <label>Crosshair Width</label>
+                    <input type="range" id="crosshairWidth" min="0" max="3" step="0.5" value="1">
+                </div>
+                <div class="sidebar-row">
+                    <label>Cal Min</label>
+                    <input type="number" id="calMin"
+                        style="width:70px; padding:4px 6px; font-size:12px; background:var(--bg-tertiary); color:var(--text-primary); border:1px solid var(--border); border-radius:4px;"
+                        step="any">
+                </div>
+                <div class="sidebar-row">
+                    <label>Cal Max</label>
+                    <input type="number" id="calMax"
+                        style="width:70px; padding:4px 6px; font-size:12px; background:var(--bg-tertiary); color:var(--text-primary); border:1px solid var(--border); border-radius:4px;"
+                        step="any">
+                </div>
+                <div class="roi-actions">
+                    <button onclick="applyCalMinMax()">Apply Range</button>
+                    <button onclick="autoCalMinMax()">Auto Range</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CANVAS -->
+        <div id="container">
+            <canvas id="gl"></canvas>
+            <div class="drop-overlay" id="dropOverlay">
+                📂 Drop NIfTI files here
+            </div>
+        </div>
     </div>
 
+    <!-- ======== FOOTER ======== -->
     <footer>
-        <p>Drag and drop NIfTI files or use the "Choose Files" button. Powered by NiiVue.</p>
+        <div id="status">Ready — Open a NIfTI file to begin</div>
+        <div>Drag & Drop supported • Powered by <strong>NiiVue</strong></div>
     </footer>
 
-    <!-- Load NiiVue -->
-    <script src="https://niivue.github.io/niivue/features/niivue.umd.js"></script>
+    <!-- ======== SCRIPTS ======== -->
+    <script src="https://unpkg.com/@niivue/niivue/dist/niivue.umd.js"></script>
     <script>
-        // Initialize NiiVue
+        // ===== State =====
+        let selectedVolumeIndex = 0;
+
+        // Atlas ROI state: stores original image data per volume index
+        const atlasOriginalData = new Map(); // key: volume index, value: { data: TypedArray copy, labels: number[] }
+        let activeROILabel = null; // currently displayed ROI label, or null = show all
+
+        // ===== Initialize NiiVue =====
         const nv = new niivue.Niivue({
             dragAndDropEnabled: true,
+            isResizeCanvas: true,
             onLocationChange: (data) => {
-                // Callback when crosshair location changes (optional)
-                // document.getElementById('status').innerText = data.string;
+                if (data && data.string) {
+                    document.getElementById('status').innerText = data.string;
+                }
             }
         });
 
         // Attach to canvas
         nv.attachTo('gl');
-
-        // Set default defaults
         nv.setSliceType(nv.sliceTypeMultiplanar);
-        nv.setRadiologicalConvention(true); // Default to radiological
+        nv.setRadiologicalConvention(true);
+        nv.opts.isColorbarShown = true;
 
-        // --- Event Listeners ---
+        // ===== Helper: Update volume list in sidebar =====
+        function updateVolumeList() {
+            const ul = document.getElementById('volumeList');
+            ul.innerHTML = '';
 
-        // File Input
-        const fileInput = document.getElementById('fileInput');
-        fileInput.onchange = function () {
-            const files = fileInput.files;
-            if (files.length > 0) {
-                // nv.loadFromFile(files[0]); // Load single file
-                // To load multiple overlays, we need to handle the FileList
-                const fileList = [];
-                for (let i = 0; i < files.length; i++) {
-                    fileList.push(files[i]);
-                }
-                // NiiVue loadFromFileList expects just the file object if it's a local file read?
-                // Actually loadFromFile takes a file object.
-                // Let's try loading the first one as base image and others as overlays if possible,
-                // or just load them sequentially.
-                // nv.loadDocument only works with URLs usually unless using drag/drop logic.
-                // But niivue has loadVolume(volumeObject).
-                // However, easiest way for local files is usually reading them converting to arraybuffer.
-                // BUT niivue.loadFromFile() is designed exactly for this input type.
-                nv.loadVolumes(fileList);
+            if (nv.volumes.length === 0) {
+                ul.innerHTML = '<li style="color: var(--text-muted); background: none; border: none; font-style: italic; cursor: default;">No volumes loaded</li>';
+                return;
             }
-        };
 
-        // Color Map
-        const colorMapSelect = document.getElementById('colorMapSelect');
-        colorMapSelect.onchange = function () {
-            nv.setColormap(this.value);
-            // If we have multiple volumes, we might want to apply to the active one or specific one.
-            // nv.volumes[0].colormap = this.value; nv.updateGLVolume();
-        };
+            nv.volumes.forEach((vol, idx) => {
+                const li = document.createElement('li');
+                li.className = idx === selectedVolumeIndex ? 'active' : '';
 
-        // Radiological Convention
-        const checkRadiological = document.getElementById('checkRadiological');
-        checkRadiological.onchange = function () {
-            nv.setRadiologicalConvention(this.checked);
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'vol-name';
+                nameSpan.textContent = `${idx === 0 ? '🖼️' : '🔲'} ${vol.name || 'Volume ' + idx}`;
+                nameSpan.title = vol.name || 'Volume ' + idx;
+                li.appendChild(nameSpan);
+
+                const removeBtn = document.createElement('span');
+                removeBtn.className = 'vol-remove';
+                removeBtn.textContent = '✕';
+                removeBtn.title = 'Remove volume';
+                removeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    nv.removeVolumeByIndex(idx);
+                    if (selectedVolumeIndex >= nv.volumes.length) {
+                        selectedVolumeIndex = Math.max(0, nv.volumes.length - 1);
+                    }
+                    updateVolumeList();
+                    syncSidebarToSelected();
+                };
+                li.appendChild(removeBtn);
+
+                li.onclick = () => {
+                    selectedVolumeIndex = idx;
+                    updateVolumeList();
+                    syncSidebarToSelected();
+                };
+
+                ul.appendChild(li);
+            });
         }
+
+        // ===== Helper: Sync sidebar controls to selected volume =====
+        function syncSidebarToSelected() {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) return;
+            const vol = nv.volumes[selectedVolumeIndex];
+
+            // Sync colormap selectors
+            document.getElementById('sidebarColormap').value = vol.colormap || 'gray';
+            document.getElementById('colormap').value = vol.colormap || 'gray';
+
+            // Sync opacity
+            document.getElementById('opacitySlider').value = vol.opacity !== undefined ? vol.opacity : 1;
+
+            // Sync calMin / calMax
+            document.getElementById('calMin').value = vol.cal_min !== undefined ? vol.cal_min : '';
+            document.getElementById('calMax').value = vol.cal_max !== undefined ? vol.cal_max : '';
+        }
+
+        // ===== Helper: Apply colormap =====
+        function applyColormap(colormapName) {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) {
+                updateStatus('No volume selected.');
+                return;
+            }
+            const vol = nv.volumes[selectedVolumeIndex];
+            // Use the correct API: setColormap(volumeId, colormapName)
+            nv.setColormap(vol.id, colormapName);
+            updateStatus(`Colormap → ${colormapName} (Volume ${selectedVolumeIndex})`);
+        }
+
+        // ===== FILE: Open =====
+        document.getElementById('fileInput').onchange = async function () {
+            const files = this.files;
+            if (!files.length) return;
+
+            // Clear existing
+            nv.volumes = [];
+            selectedVolumeIndex = 0;
+
+            for (let i = 0; i < files.length; i++) {
+                await nv.loadFromFile(files[i]);
+            }
+
+            updateVolumeList();
+            syncSidebarToSelected();
+            updateStatus(`Loaded ${files.length} file(s).`);
+            this.value = ''; // reset input
+        };
+
+        // ===== FILE: Add Overlay =====
+        document.getElementById('overlayInput').onchange = async function () {
+            const files = this.files;
+            if (!files.length) return;
+
+            for (let i = 0; i < files.length; i++) {
+                await nv.loadFromFile(files[i]);
+            }
+
+            // Auto-apply a colormap to the overlay (not gray)
+            const overlayColormaps = ['red', 'warm', 'hot', 'jet', 'inferno'];
+            for (let i = nv.volumes.length - files.length; i < nv.volumes.length; i++) {
+                if (i > 0 && nv.volumes[i]) {
+                    const cmap = overlayColormaps[(i - 1) % overlayColormaps.length];
+                    nv.setColormap(nv.volumes[i].id, cmap);
+                }
+            }
+
+            // Select the first newly added overlay
+            selectedVolumeIndex = nv.volumes.length - files.length;
+            if (selectedVolumeIndex < 0) selectedVolumeIndex = 0;
+
+            updateVolumeList();
+            syncSidebarToSelected();
+            updateStatus(`Added ${files.length} overlay(s) with auto-colormap.`);
+            this.value = '';
+        };
+
+        // ===== VIEW: Slice Type =====
+        document.getElementById('sliceType').onchange = function () {
+            const mode = parseInt(this.value);
+            if (mode === 0) nv.setSliceType(nv.sliceTypeAxial);
+            else if (mode === 1) nv.setSliceType(nv.sliceTypeCoronal);
+            else if (mode === 2) nv.setSliceType(nv.sliceTypeSagittal);
+            else if (mode === 3) nv.setSliceType(nv.sliceTypeMultiplanar);
+            else if (mode === 4) nv.setSliceType(nv.sliceTypeRender);
+        };
+
+        // ===== COLOR: Toolbar colormap =====
+        document.getElementById('colormap').onchange = function () {
+            applyColormap(this.value);
+            document.getElementById('sidebarColormap').value = this.value;
+        };
+
+        // ===== COLOR: Sidebar colormap =====
+        document.getElementById('sidebarColormap').onchange = function () {
+            applyColormap(this.value);
+            document.getElementById('colormap').value = this.value;
+        };
+
+        // ===== OPACITY =====
+        document.getElementById('opacitySlider').oninput = function () {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) return;
+            nv.setOpacity(selectedVolumeIndex, parseFloat(this.value));
+        };
+
+        // ===== OPTIONS =====
+        document.getElementById('chkRadio').onchange = function () {
+            nv.setRadiologicalConvention(this.checked);
+        };
+
+        document.getElementById('chkCross').onchange = function () {
+            nv.setCrosshairWidth(this.checked ? 1 : 0);
+        };
+
+        document.getElementById('chkText').onchange = function () {
+            nv.setCornerOrientationText(this.checked);
+        };
+
+        document.getElementById('chkColorbar').onchange = function () {
+            nv.opts.isColorbarShown = this.checked;
+            nv.drawScene();
+        };
+
+        document.getElementById('crosshairWidth').oninput = function () {
+            nv.setCrosshairWidth(parseFloat(this.value));
+        };
+
+        // ===== BACKGROUND COLOR =====
+        document.getElementById('bgColor').onchange = function () {
+            const parts = this.value.split(',').map(Number);
+            nv.opts.backColor = [parts[0], parts[1], parts[2], 1];
+            nv.drawScene();
+            updateStatus(`Background → ${this.options[this.selectedIndex].text}`);
+        };
+
+        // ===== CAL MIN / MAX (intensity windowing) =====
+        function applyCalMinMax() {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) return;
+            const vol = nv.volumes[selectedVolumeIndex];
+            const cmin = parseFloat(document.getElementById('calMin').value);
+            const cmax = parseFloat(document.getElementById('calMax').value);
+            if (!isNaN(cmin)) vol.cal_min = cmin;
+            if (!isNaN(cmax)) vol.cal_max = cmax;
+            nv.updateGLVolume();
+            updateStatus(`Intensity range: ${cmin} – ${cmax}`);
+        }
+
+        function autoCalMinMax() {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) return;
+            const vol = nv.volumes[selectedVolumeIndex];
+            const img = vol.img;
+            let mn = Infinity, mx = -Infinity;
+            for (let i = 0; i < img.length; i++) {
+                if (img[i] !== 0) {
+                    if (img[i] < mn) mn = img[i];
+                    if (img[i] > mx) mx = img[i];
+                }
+            }
+            if (mn === Infinity) { mn = 0; mx = 1; }
+            vol.cal_min = mn;
+            vol.cal_max = mx;
+            document.getElementById('calMin').value = mn;
+            document.getElementById('calMax').value = mx;
+            nv.updateGLVolume();
+            updateStatus(`Auto range: ${mn} – ${mx}`);
+        }
+
+        // ===== TOOLS =====
+        function takeScreenshot() {
+            nv.saveScene('neuro_screenshot.png');
+            updateStatus('Screenshot saved.');
+        }
+
+        function resetView() {
+            nv.setSliceType(nv.sliceTypeMultiplanar);
+            document.getElementById('sliceType').value = '3';
+            updateStatus('View reset to Multiplanar.');
+        }
+
+        function updateStatus(msg) {
+            document.getElementById('status').innerText = msg;
+        }
+
+        // ===== ATLAS ROI FILTER =====
+
+        /**
+         * Scan the selected volume's image data for unique non-zero integer labels.
+         * Stores a backup of the original data so we can restore it later.
+         */
+        function detectROIs() {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) {
+                updateStatus('No volume selected.');
+                return;
+            }
+
+            const vol = nv.volumes[selectedVolumeIndex];
+            const img = vol.img; // TypedArray (Int16Array, Float32Array, etc.)
+
+            if (!img || img.length === 0) {
+                updateStatus('Volume has no image data.');
+                return;
+            }
+
+            updateStatus('Scanning for ROI labels... please wait.');
+
+            // Use setTimeout to allow the UI to update before the heavy computation
+            setTimeout(() => {
+                // Backup original data if not already backed up
+                if (!atlasOriginalData.has(selectedVolumeIndex)) {
+                    atlasOriginalData.set(selectedVolumeIndex, {
+                        data: img.slice(), // copy
+                        labels: []
+                    });
+                }
+
+                // Find unique non-zero integer labels
+                const labelSet = new Set();
+                for (let i = 0; i < img.length; i++) {
+                    const v = img[i];
+                    if (v !== 0 && Number.isFinite(v)) {
+                        labelSet.add(Math.round(v));
+                    }
+                }
+
+                const labels = Array.from(labelSet).sort((a, b) => a - b);
+                atlasOriginalData.get(selectedVolumeIndex).labels = labels;
+
+                // Populate the ROI container
+                const container = document.getElementById('roiContainer');
+                container.innerHTML = '';
+
+                if (labels.length === 0) {
+                    container.innerHTML = '<div class="roi-info">No integer labels found in this volume.</div>';
+                    updateStatus('No ROI labels detected.');
+                    return;
+                }
+
+                labels.forEach(label => {
+                    const chip = document.createElement('span');
+                    chip.className = 'roi-chip';
+                    chip.textContent = label;
+                    chip.dataset.label = label;
+                    chip.title = `Show only ROI ${label}`;
+                    chip.onclick = () => selectROI(label, chip);
+                    container.appendChild(chip);
+                });
+
+                activeROILabel = null;
+                document.getElementById('roiStatus').textContent = `${labels.length} ROIs detected (range: ${labels[0]}–${labels[labels.length - 1]})`;
+                document.getElementById('roiSearch').value = '';
+                updateStatus(`Detected ${labels.length} ROI labels in volume ${selectedVolumeIndex}.`);
+            }, 50);
+        }
+
+        /**
+         * Show only the selected ROI label in the atlas volume.
+         * Zeros out all other voxels, keeping the original label value for the selected ROI.
+         */
+        function selectROI(label, chipElement) {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) return;
+            if (!atlasOriginalData.has(selectedVolumeIndex)) {
+                updateStatus('Please detect ROIs first.');
+                return;
+            }
+
+            const vol = nv.volumes[selectedVolumeIndex];
+            const backup = atlasOriginalData.get(selectedVolumeIndex);
+            const origData = backup.data;
+
+            // Volume dimensions: vol.dims = [nDim, nx, ny, nz, ...]
+            const nx = vol.dims[1];
+            const ny = vol.dims[2];
+            const nz = vol.dims[3];
+
+            // Modify image data AND compute centroid in voxel coords simultaneously
+            let sumX = 0, sumY = 0, sumZ = 0, count = 0;
+
+            for (let idx = 0; idx < vol.img.length; idx++) {
+                const matches = (Math.round(origData[idx]) === label);
+                vol.img[idx] = matches ? origData[idx] : 0;
+
+                if (matches) {
+                    // flat index → 3D voxel (row-major: x changes fastest)
+                    const vx = idx % nx;
+                    const vy = Math.floor(idx / nx) % ny;
+                    const vz = Math.floor(idx / (nx * ny));
+                    sumX += vx;
+                    sumY += vy;
+                    sumZ += vz;
+                    count++;
+                }
+            }
+
+            activeROILabel = label;
+            nv.updateGLVolume();
+
+            // Navigate crosshair to ROI centroid
+            if (count > 0) {
+                const cx = sumX / count;
+                const cy = sumY / count;
+                const cz = sumZ / count;
+
+                try {
+                    // Strategy: convert voxel centroid → mm → frac
+                    // NiiVue stores dims as [nDim, nx, ny, nz, ...]
+                    // dimsRAS stores reoriented dims (same format)
+                    const dimsToUse = vol.dimsRAS || vol.dims;
+                    const dnx = dimsToUse[1] || nx;
+                    const dny = dimsToUse[2] || ny;
+                    const dnz = dimsToUse[3] || nz;
+
+                    let navigated = false;
+
+                    // Method 1: Use vol.frac2mm (4x4 matrix on the volume) + nv.mm2frac
+                    // This is the official pattern from the NiiVue atlas demo
+                    if (typeof nv.mm2frac === 'function') {
+                        // Convert voxel → fraction of THIS volume
+                        const fracX = cx / Math.max(dnx - 1, 1);
+                        const fracY = cy / Math.max(dny - 1, 1);
+                        const fracZ = cz / Math.max(dnz - 1, 1);
+
+                        // Use the volume's frac2mm matrix to go from fraction → world mm
+                        if (vol.frac2mm && vol.frac2mm.length >= 16) {
+                            const m = vol.frac2mm;
+                            const mmX = m[0] * fracX + m[4] * fracY + m[8] * fracZ + m[12];
+                            const mmY = m[1] * fracX + m[5] * fracY + m[9] * fracZ + m[13];
+                            const mmZ = m[2] * fracX + m[6] * fracY + m[10] * fracZ + m[14];
+                            // Convert mm → fractional coords relative to background (volume[0])
+                            const frac = nv.mm2frac([mmX, mmY, mmZ]);
+                            nv.scene.crosshairPos = [frac[0], frac[1], frac[2]];
+                            navigated = true;
+                        }
+
+                        // Method 2: if this IS the background volume, voxel fracs = scene fracs
+                        if (!navigated && selectedVolumeIndex === 0) {
+                            const frac = nv.mm2frac(nv.frac2mm([fracX, fracY, fracZ]));
+                            nv.scene.crosshairPos = [frac[0], frac[1], frac[2]];
+                            navigated = true;
+                        }
+
+                        // Method 3: Try mm2vox in reverse — use nv.frac2mm on simple fracs
+                        if (!navigated) {
+                            // Just use simple voxel fractions and hope volumes are co-registered
+                            const frac = nv.mm2frac(nv.frac2mm([fracX, fracY, fracZ]));
+                            nv.scene.crosshairPos = [frac[0], frac[1], frac[2]];
+                            navigated = true;
+                        }
+                    }
+
+                    // Fallback: direct fractional coords (works when atlas = background vol)
+                    if (!navigated) {
+                        nv.scene.crosshairPos = [
+                            cx / Math.max(nx - 1, 1),
+                            cy / Math.max(ny - 1, 1),
+                            cz / Math.max(nz - 1, 1)
+                        ];
+                    }
+
+                    nv.drawScene();
+                    console.log(`ROI ${label}: centroid voxel=(${cx.toFixed(1)}, ${cy.toFixed(1)}, ${cz.toFixed(1)}), count=${count}`);
+                } catch (e) {
+                    console.warn('Could not navigate to ROI centroid:', e);
+                }
+            }
+
+            // Update chip styling
+            document.querySelectorAll('#roiContainer .roi-chip').forEach(c => {
+                c.classList.toggle('active', parseInt(c.dataset.label) === label);
+            });
+
+            document.getElementById('roiStatus').textContent = `ROI ${label} — ${count} voxels`;
+            updateStatus(`ROI ${label} (${count} vox) — crosshair at centroid`);
+        }
+
+        /**
+         * Restore the original atlas data (show all ROIs).
+         */
+        function showAllROIs() {
+            if (nv.volumes.length === 0 || selectedVolumeIndex >= nv.volumes.length) return;
+            if (!atlasOriginalData.has(selectedVolumeIndex)) {
+                updateStatus('No ROI data to restore.');
+                return;
+            }
+
+            const vol = nv.volumes[selectedVolumeIndex];
+            const backup = atlasOriginalData.get(selectedVolumeIndex);
+
+            // Restore original image data
+            vol.img.set(backup.data);
+            activeROILabel = null;
+
+            nv.updateGLVolume();
+
+            // Remove active styling from all chips
+            document.querySelectorAll('#roiContainer .roi-chip').forEach(c => {
+                c.classList.remove('active');
+            });
+
+            const labels = backup.labels;
+            document.getElementById('roiStatus').textContent = `${labels.length} ROIs (showing all)`;
+            updateStatus('Atlas restored: showing all ROIs.');
+        }
+
+        /**
+         * Filter ROI chips by search text.
+         */
+        function filterROIChips() {
+            const query = document.getElementById('roiSearch').value.trim();
+            document.querySelectorAll('#roiContainer .roi-chip').forEach(chip => {
+                const label = chip.dataset.label;
+                chip.style.display = (!query || label.includes(query)) ? '' : 'none';
+            });
+        }
+
+        // ===== Drop zone visual feedback =====
+        const container = document.getElementById('container');
+        const dropOverlay = document.getElementById('dropOverlay');
+
+        container.addEventListener('dragenter', (e) => {
+            e.preventDefault();
+            dropOverlay.classList.add('visible');
+        });
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+        container.addEventListener('dragleave', (e) => {
+            if (!container.contains(e.relatedTarget)) {
+                dropOverlay.classList.remove('visible');
+            }
+        });
+        container.addEventListener('drop', (e) => {
+            dropOverlay.classList.remove('visible');
+            // NiiVue handles the drop internally if dragAndDropEnabled is true
+            // We just need to update the UI after a short delay
+            setTimeout(() => {
+                updateVolumeList();
+                syncSidebarToSelected();
+                updateStatus(`Loaded file(s) via drag & drop.`);
+            }, 1000);
+        });
+
+        // ===== Listen for volume changes from NiiVue events =====
+        // NiiVue emits events when volumes are loaded
+        nv.addEventListener('imageLoaded', () => {
+            setTimeout(() => {
+                updateVolumeList();
+                syncSidebarToSelected();
+            }, 200);
+        });
 
     </script>
 </body>
