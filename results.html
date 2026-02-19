@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neuroimaging Results Visualization - NiiVue</title>
+    <!-- Basic styling -->
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #202020;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            padding: 10px 20px;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        #controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #container {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            outline: none;
+        }
+
+        footer {
+            padding: 5px 20px;
+            background-color: #333;
+            text-align: center;
+            font-size: 0.8rem;
+        }
+
+        button,
+        select,
+        input[type="file"] {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>NeuroResults Viewer</h1>
+        <div id="controls">
+            <input type="file" id="fileInput" multiple accept=".nii,.nii.gz">
+            <select id="colorMapSelect">
+                <option value="gray">Gray</option>
+                <option value="jet">Jet</option>
+                <option value="winter">Winter</option>
+                <option value="warm">Warm</option>
+                <option value="cool">Cool</option>
+                <option value="magma">Magma</option>
+                <option value="inferno">Inferno</option>
+                <option value="plasma">Plasma</option>
+                <option value="viridis">Viridis</option>
+            </select>
+            <label><input type="checkbox" id="checkRadiological" checked> Radiological</label>
+        </div>
+    </header>
+
+    <div id="container">
+        <canvas id="gl"></canvas>
+    </div>
+
+    <footer>
+        <p>Drag and drop NIfTI files or use the "Choose Files" button. Powered by NiiVue.</p>
+    </footer>
+
+    <!-- Load NiiVue -->
+    <script src="https://niivue.github.io/niivue/features/niivue.umd.js"></script>
+    <script>
+        // Initialize NiiVue
+        const nv = new niivue.Niivue({
+            dragAndDropEnabled: true,
+            onLocationChange: (data) => {
+                // Callback when crosshair location changes (optional)
+                // document.getElementById('status').innerText = data.string;
+            }
+        });
+
+        // Attach to canvas
+        nv.attachTo('gl');
+
+        // Set default defaults
+        nv.setSliceType(nv.sliceTypeMultiplanar);
+        nv.setRadiologicalConvention(true); // Default to radiological
+
+        // --- Event Listeners ---
+
+        // File Input
+        const fileInput = document.getElementById('fileInput');
+        fileInput.onchange = function () {
+            const files = fileInput.files;
+            if (files.length > 0) {
+                // nv.loadFromFile(files[0]); // Load single file
+                // To load multiple overlays, we need to handle the FileList
+                const fileList = [];
+                for (let i = 0; i < files.length; i++) {
+                    fileList.push(files[i]);
+                }
+                // NiiVue loadFromFileList expects just the file object if it's a local file read?
+                // Actually loadFromFile takes a file object.
+                // Let's try loading the first one as base image and others as overlays if possible,
+                // or just load them sequentially.
+                // nv.loadDocument only works with URLs usually unless using drag/drop logic.
+                // But niivue has loadVolume(volumeObject).
+                // However, easiest way for local files is usually reading them converting to arraybuffer.
+                // BUT niivue.loadFromFile() is designed exactly for this input type.
+                nv.loadVolumes(fileList);
+            }
+        };
+
+        // Color Map
+        const colorMapSelect = document.getElementById('colorMapSelect');
+        colorMapSelect.onchange = function () {
+            nv.setColormap(this.value);
+            // If we have multiple volumes, we might want to apply to the active one or specific one.
+            // nv.volumes[0].colormap = this.value; nv.updateGLVolume();
+        };
+
+        // Radiological Convention
+        const checkRadiological = document.getElementById('checkRadiological');
+        checkRadiological.onchange = function () {
+            nv.setRadiologicalConvention(this.checked);
+        }
+
+    </script>
+</body>
+
+</html>
